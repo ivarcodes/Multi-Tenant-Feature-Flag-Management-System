@@ -22,7 +22,7 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/super-admin/login" element={<SuperAdminLogin />} />
-          <Route path="/super-admin/organizations" element={<ProtectedRoute allowedRole="super-admin"><OrganizationsPage /></ProtectedRoute>} />
+          <Route path="/super-admin/organizations" element={<ProtectedRoute allowedRole="super_admin"><OrganizationsPage /></ProtectedRoute>} />
           <Route path="/admin/signup" element={<AdminSignup />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<ProtectedRoute allowedRole="admin"><DashboardPage /></ProtectedRoute>} />
