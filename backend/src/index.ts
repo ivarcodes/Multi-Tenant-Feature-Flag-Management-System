@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import { connectDB } from './config/db';
 import { config } from './config';
@@ -15,6 +16,7 @@ const app = express();
 
 app.use(cors({ origin: config.allowedOrigins, credentials: true }));
 app.use(express.json());
+app.use(cookieParser());
 app.use(requestId);
 
 morgan.token('id', (req) => (req as any).id);

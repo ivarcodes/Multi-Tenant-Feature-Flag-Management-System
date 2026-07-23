@@ -10,13 +10,20 @@ interface JwtPayload {
 }
 
 export function authenticate(req: Request, res: Response, next: NextFunction): void {
+  let token: string | undefined;
+
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    res.status(401).json({ success: false, error: { message: 'Missing or invalid authorization header' } });
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.split(' ')[1];
+  } else if (req.cookies?.token) {
+    token = req.cookies.token;
+  }
+
+  if (!token) {
+    res.status(401).json({ success: false, error: { message: 'Authentication required' } });
     return;
   }
 
-  const token = authHeader.split(' ')[1];
   try {
     const decoded = jwt.verify(token, config.jwtSecret) as JwtPayload;
     req.userId = decoded.userId;

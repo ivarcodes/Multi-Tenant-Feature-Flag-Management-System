@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { User } from '../models/User';
 import { generateToken } from '../utils/jwt';
@@ -8,6 +9,11 @@ import { config } from '../config';
 import { UserRole } from '../types/models';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const COOKIE_OPTIONS = { httpOnly: true, sameSite: 'lax' as const, path: '/' };
+
+function setTokenCookie(res: Response, token: string): void {
+  res.cookie('token', token, COOKIE_OPTIONS);
+}
 
 export const signup = asyncHandler(async (req, res) => {
   const { email, password, orgId, role } = req.body;
@@ -34,7 +40,8 @@ export const signup = asyncHandler(async (req, res) => {
   const user = await User.create({ email, passwordHash, orgId, role });
 
   const token = generateToken({ userId: user.id, orgId: user.orgId, role: user.role });
-  sendCreated(res, { token, role: user.role });
+  setTokenCookie(res, token);
+  sendCreated(res, { role: user.role });
 });
 
 export const login = asyncHandler(async (req, res) => {
@@ -54,7 +61,8 @@ export const login = asyncHandler(async (req, res) => {
       orgId: undefined,
       role: config.superAdmin.role as UserRole,
     });
-    sendSuccess(res, { token, role: config.superAdmin.role });
+    setTokenCookie(res, token);
+    sendSuccess(res, { role: config.superAdmin.role });
     return;
   }
 
@@ -69,5 +77,15 @@ export const login = asyncHandler(async (req, res) => {
   }
 
   const token = generateToken({ userId: user.id, orgId: user.orgId, role: user.role });
-  sendSuccess(res, { token, role: user.role });
+  setTokenCookie(res, token);
+  sendSuccess(res, { role: user.role });
+});
+
+export const me = asyncHandler(async (req, res) => {
+  sendSuccess(res, { userId: req.userId, orgId: req.orgId, role: req.role });
+});
+
+export const logout = asyncHandler(async (_req, res) => {
+  res.clearCookie('token', { path: '/' });
+  sendSuccess(res, { message: 'Logged out' });
 });
