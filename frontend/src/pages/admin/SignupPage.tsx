@@ -13,5 +13,5 @@ export function AdminSignup() {
     navigate('/admin/dashboard');
   };
 
-  return <SignupForm onSubmit={handleSubmit} extra={<p className="text-center mt-4 text-sm text-gray-500">Already have an account? <Link to="/admin/login" className="text-blue-600">Login</Link></p>} />;
+  return <SignupForm title="Admin Signup" onSubmit={handleSubmit} extra={<p className="text-center mt-6 text-sm text-gray-500">Already have an account? <Link to="/admin/login" className="text-blue-600 hover:text-blue-800 font-medium transition">Login</Link></p>} />;
 }
